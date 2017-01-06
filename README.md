@@ -12,7 +12,7 @@ Raytracers are nutorious for being very intensive and ineffiecent tasks to compl
 + Plane Geometry
 + Sphere Geometry
 
-# Future Features
+## Future Features
 + Mesh Geometry
 + Light Penumbra
 
