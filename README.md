@@ -3,7 +3,7 @@ In this project I have tried to implement a 3D raytracer that is capable of rend
 Raytracers are nutorious for being very intensive and ineffiecent tasks to complete - especially in real-time as the nature of the algorithm only supports one pixel at a time.
 
 ## Demo
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=zzOCSV7xwN0" target="_blank"><img src="http://img.youtube.com/vi/zzOCSV7xwN0/0.jpg" alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=zzOCSV7xwN0" target="_blank"><img src="http://img.youtube.com/vi/zzOCSV7xwN0/0.jpg" alt="Youtube link" width="240" height="180" border="10" /></a>
 
 ## Supported Features
 + Ambient Lights
