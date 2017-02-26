@@ -15,6 +15,10 @@ public final class Color {
 	}
 	
 	public Color(float red, float green, float blue) {
+		set(red, green, blue);
+	}
+	
+	public void set(float red, float green, float blue) {
 		this.red = red;
 		this.green = green;
 		this.blue = blue;
