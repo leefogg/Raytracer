@@ -1,10 +1,7 @@
 package Engine;
 
-import java.util.ArrayList;
-
 import Objects.Light;
 import Objects.RenderObject;
-import Utils.Vector;
 
 public final class Scene {
 	public RenderObject[] objects;

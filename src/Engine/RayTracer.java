@@ -2,12 +2,10 @@ package Engine;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 
 import Objects.Light;
 import Objects.RenderObject;
 import Utils.Color;
-import Utils.Position;
 import Utils.Vector;
 
 public final class RayTracer {
