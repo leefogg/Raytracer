@@ -16,8 +16,8 @@ public class RenderWorker extends Thread {
 	public static volatile int renderPositionIndex = 0;
 	
 	public static final int 
-	width = 25,
-	height = 25;
+	sectorWidth = 25,
+	sectorHeight = 25;
 	
 	private static float distanceMultiplier = 1f / (100f / 255f);
 
@@ -47,7 +47,12 @@ public class RenderWorker extends Thread {
 	}
 	
 	public static void generateRenderPositions() {
-		int x=0, y=0, index=0;
+		int 
+		x=0, 
+		y=0, 
+		index=0,
+		width = diffusemap.getWidth(),
+		height = diffusemap.getHeight();
 		while (true) {
 			if (index < renderpositions.size()) {
 				Position pos = renderpositions.get(index++);
@@ -57,12 +62,12 @@ public class RenderWorker extends Thread {
 				renderpositions.add(new Position(x,y));
 				index++;
 			}
-			x += RenderWorker.width;
-			if (x >= diffusemap.getWidth()) {
+			x += RenderWorker.sectorWidth;
+			if (x >= width) {
 				x = 0;
-				y += RenderWorker.height;
+				y += RenderWorker.sectorHeight;
 			}
-			if (y >= diffusemap.getHeight()) break;
+			if (y >= height) break;
 		}
 	}
 
@@ -76,17 +81,21 @@ public class RenderWorker extends Thread {
 
 	@Override
 	public void run() {
+		int 
+		width = diffusemap.getWidth(),
+		height = diffusemap.getHeight();
 		while (true) {
-			if (renderpositions.size() <= renderPositionIndex) break;
+			if (renderpositions.size() <= renderPositionIndex)
+				break;
 			Position nextpos = renderpositions.get(renderPositionIndex++);
 			startx = nextpos.x;
 			starty = nextpos.y;
 
 			int 
-			endx = startx + width,
-			endy = starty + height;
-			if (endx > diffusemap.getWidth()) 	endx = diffusemap.getWidth();
-			if (endy > diffusemap.getHeight())	endy = diffusemap.getHeight();
+			endx = startx + sectorWidth,
+			endy = starty + sectorHeight;
+			if (endx > width) 	endx = width;
+			if (endy > height)	endy = height;
 			
 			Color color;
 			Raycast job = new Raycast();

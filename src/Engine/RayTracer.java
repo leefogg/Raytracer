@@ -198,6 +198,6 @@ public final class RayTracer {
 		canvas.setColor(java.awt.Color.green);
 		for (RenderWorker worker : workers)
 			if (worker.isAlive())
-				canvas.fillRect(worker.getX(), worker.getY(), RenderWorker.width, RenderWorker.height);
+				canvas.fillRect(worker.getX(), worker.getY(), RenderWorker.sectorWidth, RenderWorker.sectorHeight);
 	}
 }
