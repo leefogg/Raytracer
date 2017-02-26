@@ -30,7 +30,6 @@ public final class RayTracer {
 		
 		RenderWorker.updateScene(workingscene);
 		RenderWorker.updateImages(diffusemap, depthmap, lightmap);
-		RenderWorker.generateRenderPositions();
 	}
 	
 	public void setImageSize(int width, int height) {
@@ -39,7 +38,6 @@ public final class RayTracer {
 		lightmap = new BufferedImage(diffusemap.getWidth(), diffusemap.getHeight(), BufferedImage.TYPE_INT_RGB);
 		
 		RenderWorker.updateImages(diffusemap, depthmap, lightmap);
-		RenderWorker.generateRenderPositions();
 	}
 	
 	public static void setScene(Scene scene) {
@@ -198,6 +196,6 @@ public final class RayTracer {
 		canvas.setColor(java.awt.Color.green);
 		for (RenderWorker worker : workers)
 			if (worker.isAlive())
-				canvas.fillRect(worker.getX(), worker.getY(), RenderWorker.sectorWidth, RenderWorker.sectorHeight);
+				canvas.fillRect(worker.getX(), worker.getY(), diffusemap.getWidth(), 1);
 	}
 }
