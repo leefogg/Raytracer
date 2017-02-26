@@ -8,7 +8,7 @@ public final class Camera {
 	right,
 	up;
 	
-	private Vector[][] raydirections;
+	private Ray[][] rays;
 	
 	public Camera(Vector pos, Vector lookat) {
 		setPosition(pos);
@@ -26,17 +26,17 @@ public final class Camera {
 	}
 	
 	public void cacheRays(int width, int height) {
-		raydirections = new Vector[height][width];
+		rays = new Ray[height][width];
 		for (int y=0; y<height; y++)
 			for (int x=0; x<width; x++)
-				raydirections[y][x] = screenToRay(x, y, width, height);
+				rays[y][x] = new Ray(position, screenToRayDirection(x, y, width, height));
 	}
 	
-	public Vector getRayDirection(int x, int y) {
-		return raydirections[y][x];
+	public Ray getRay(int x, int y) {
+		return rays[y][x];
 	}
 	
-	private Vector screenToRay(int x, int y, int width, int height) {
+	private Vector screenToRayDirection(int x, int y, int width, int height) {
 		float x2 = (x - (width / 2f)) / 2f / width;
 		float y2 = -(y - (height / 2f)) / 2f / height;
 		return new Vector(

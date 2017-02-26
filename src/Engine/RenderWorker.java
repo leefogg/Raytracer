@@ -93,7 +93,7 @@ public class RenderWorker extends Thread {
 			int depth;
 			for (int y=starty; y<endy; y++) {
 				for (int x=startx; x<endx; x++) {
-					color = RayTracer.traceRay(job, new Ray(workingscene.camera.position, workingscene.camera.getRayDirection(x, y)), 0);
+					color = RayTracer.traceRay(job, workingscene.camera.getRay(x, y), 0);
 					diffusemap.setRGB(x, y, color.getRGB());
 
 					depth = (int)(job.objdistance*distanceMultiplier); // Depth is limited to 100 units

@@ -177,7 +177,7 @@ public final class RayTracer {
 			for (int x=startx; x<endy; x++) {
 				Raycast job = new Raycast();
 				rays++;
-				Color color = traceRay(job, new Ray(workingscene.camera.position, workingscene.camera.getRayDirection(x, y)), 0);
+				Color color = traceRay(job, workingscene.camera.getRay(x, y), 0);
 				diffusemap.setRGB(x, y, color.toDrawingColor().getRGB());
 				
 				int depth = (int)(Math.sqrt(job.objdistance)*3.921f); // Depth is limited to 1000 units
