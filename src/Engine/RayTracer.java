@@ -64,13 +64,15 @@ public final class RayTracer {
 	
 	public static Color traceRay(Raycast job, Ray ray, int depth) {  //Copy traceRay method for use in viewport that doesn't reccur or shade
 		iterations++;
-		if (depth >= maxRays) return job.sumColor;
+		if (depth >= maxRays) 
+			return job.sumColor;
 		
 		RaycastReport intersections = intersectScene(ray);
 		if (intersections == null) // Stop tracing if no hit
 			return Color.voidColor;
 		
-		if (depth == 0) job.objdistance = intersections.distance;
+		if (depth == 0) 
+			job.objdistance = intersections.distance;
 		job.hits = depth;
 		Color hitcolor = shade(job, intersections, depth);
 		job.sumColor.add(hitcolor);
