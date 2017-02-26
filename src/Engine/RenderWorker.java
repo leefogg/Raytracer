@@ -50,6 +50,7 @@ public class RenderWorker extends Thread {
 		int 
 		width = diffusemap.getWidth(),
 		height = diffusemap.getHeight();
+		Raycast job = new Raycast();
 		while (true) {
 			++currentScanLine;
 			int scanline = currentScanLine;
@@ -57,9 +58,9 @@ public class RenderWorker extends Thread {
 				break;
 			
 			Color color;
-			Raycast job = new Raycast();
 			int depth;
 			for (int x=0; x<width; x++) {
+				job.clear();
 				color = RayTracer.traceRay(job, workingscene.camera.getRay(x, scanline), 0);
 				diffusemap.setRGB(x, scanline, color.getRGB());
 
@@ -71,7 +72,6 @@ public class RenderWorker extends Thread {
 				
 				job.clear();
 			}
-
 		}
 	}
 }
