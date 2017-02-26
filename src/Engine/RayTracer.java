@@ -88,18 +88,22 @@ public final class RayTracer {
 		direction.subtract(Vector.scale(Vector.dot(normal, direction) * 2, normal));
 		Color reflectedcolor = getReflectionColor(job, report.object, hitposition, direction, depth);
 		Color naturalcolor = light(job, report, hitposition, normal, direction, depth);
-		return Color.add(naturalcolor, reflectedcolor);
+		return naturalcolor.add(reflectedcolor);
 	}
 
 	private static Color getReflectionColor(Raycast job, RenderObject object, Vector pos, Vector reflectdirection, int depth) {
 		float reflectivity = object.material.reflectivity(pos);
-		if (reflectivity == 0) return Color.black;
+		if (reflectivity == 0) 
+			return Color.black;
+		
 		rays++;
-		return Color.scale(reflectivity, traceRay(job, new Ray(pos, reflectdirection), ++depth));
+		
+		return traceRay(job, new Ray(pos, reflectdirection), ++depth).scale(reflectivity);
 	}
 
 	private static Color light(Raycast job, RaycastReport hit, Vector hitpos, Vector normal, Vector reflectdirection, int depth) {
 		Color outputColor = hit.object.material.ambientColor();
+		
 		for (Light light : workingscene.lights) {
 			Vector
 			lightDirection = Vector.subtract(light.position, hitpos),
@@ -109,26 +113,32 @@ public final class RayTracer {
 				RaycastReport toLight = intersectScene(new Ray(hitpos, lightDirectionNorm));
 				rays++;
 				boolean isinshadow = (toLight == null) ? false : (toLight.distance <= Vector.distance(lightDirection));
-				if (isinshadow) continue;
+				if (isinshadow) 
+					continue;
 			}
 			
 			float phumbrella = light.getBrightnessAtAngle(hit.ray);
-			if (phumbrella == 0) continue;
+			if (phumbrella == 0) 
+				continue;
 			
 			float illumination = Vector.dot(lightDirectionNorm, normal);
 			illumination *= phumbrella;
 			float specular = Vector.dot(lightDirectionNorm, reflectdirection.normalize());
 			Color 
-			lightColor = (illumination > 0) ? Color.scale(illumination, light.color) : Color.defaultcolor,
-			specularColor = (specular > 0) ? Color.scale((float)Math.pow(specular, hit.object.material.roughness), light.color) : Color.defaultcolor; // Pow? Not scale?
-			if (depth == 0) job.lightColor.add(lightColor);
-			lightColor.multiply(hit.object.material.diffuseColor(hitpos));
-			specularColor.multiply(hit.object.material.specularColor(hitpos));
-			lightColor.add(specularColor);
-			lightColor.scale(light.brightness);
-			outputColor = Color.add(outputColor, lightColor);
+			lightcolor = (illumination > 0) ? Color.scale(illumination, light.color) : Color.defaultcolor,
+			specularcolor = (specular > 0) ? Color.scale((float)Math.pow(specular, hit.object.material.roughness), light.color) : Color.defaultcolor; // Pow? Not scale?
+			if (depth == 0) 
+				job.lightColor.add(lightcolor);
+			lightcolor.multiply(hit.object.material.diffuseColor(hitpos));
+			specularcolor.multiply(hit.object.material.specularColor(hitpos));
+			lightcolor.add(specularcolor);
+			lightcolor.scale(light.brightness);
+			
+			outputColor = outputColor.add(lightcolor);
 		}
+		
 		iterations += workingscene.lights.length;
+		
 		return outputColor;
 	}
 

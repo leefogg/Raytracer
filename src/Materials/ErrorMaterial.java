@@ -11,7 +11,7 @@ public final class ErrorMaterial extends Material {
 
 	@Override
 	public Color diffuseColor(Vector pos) {
-		return Color.black;
+		return Color.black.Clone();
 	}
 	
 	@Override
@@ -21,7 +21,7 @@ public final class ErrorMaterial extends Material {
 	
 	@Override
 	public Color specularColor(Vector pos) {
-		return Color.white;
+		return Color.white.Clone();
 	}
 
 	@Override

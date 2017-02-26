@@ -18,32 +18,36 @@ public final class Color {
 		set(red, green, blue);
 	}
 	
-	public void set(float red, float green, float blue) {
+	public Color set(float red, float green, float blue) {
 		this.red = red;
 		this.green = green;
 		this.blue = blue;
+		return this;
 	}
 
 	public static Color scale(float scale, Color c) {
 		return new Color(scale * c.red, scale * c.green, scale * c.blue);
 	}
 	
-	public void scale(Color other) {
+	public Color scale(Color other) {
 		red *= other.red;
 		blue *= other.green;
 		green *= other.blue;
+		return this;
 	}
 	
-	public void scale(float scale) {
+	public Color scale(float scale) {
 		red *= scale;
 		blue *= scale;
 		green *= scale;
+		return this;
 	}
 	
-	public void add(Color other) {
+	public Color add(Color other) {
 		red += other.red;
 		green += other.green;
 		blue += other.blue;
+		return this;
 	}
 	
 	public static Color add(Color c1, Color c2) {
@@ -54,10 +58,11 @@ public final class Color {
 		return new Color(c1.red * c2.red, c1.green * c2.green, c1.blue * c2.blue);
 	}
 	
-	public void multiply(Color other) {
+	public Color multiply(Color other) {
 		red *= other.red;
 		blue *= other.green;
 		green *= other.blue;
+		return this;
 	}
 	
 	public Color Clone() {

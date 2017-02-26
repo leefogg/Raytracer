@@ -13,18 +13,18 @@ public final class CheckerboardMaterial extends Material {
 	@Override
 	public Color diffuseColor(Vector pos) {
 		if ((Math.floor(pos.z) + Math.floor(pos.x)) % 2 != 0)
-			return Color.white;
-		return Color.black;
+			return Color.white.Clone();
+		return Color.black.Clone();
 	}
 	
 	@Override
 	public Color ambientColor() {
-		return Color.black;
+		return Color.black.Clone();
 	}
 
 	@Override
 	public Color specularColor(Vector pos) {
-		return Color.white;
+		return Color.white.Clone();
 	}
 
 	@Override

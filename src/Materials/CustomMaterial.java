@@ -27,7 +27,6 @@ public final class CustomMaterial extends Material {
 
 	@Override
 	public Color specularColor(Vector pos) {
-		// TODO Auto-generated method stub
 		return specular;
 	}
 

@@ -11,17 +11,17 @@ public final class PlasticMaterial extends Material {
 
 	@Override
 	public Color diffuseColor(Vector pos) {
-		return Color.white;
+		return Color.white.Clone();
 	}
 
 	@Override
 	public Color ambientColor() {
-		return Color.grey;
+		return Color.grey.Clone();
 	}
 	
 	@Override
 	public Color specularColor(Vector pos) {
-		return Color.black;
+		return Color.black.Clone();
 	}
 
 	@Override
