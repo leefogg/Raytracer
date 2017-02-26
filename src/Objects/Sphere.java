@@ -6,7 +6,6 @@ import Utils.Vector;
 
 
 public final class Sphere extends RenderObject {
-	
 	private float radiussquared;
 	
 	public Sphere(Vector pos, float radius, Material mat) {
@@ -29,7 +28,7 @@ public final class Sphere extends RenderObject {
 		if (v >= 0) {
 			float disc = radiussquared - (Vector.dot(eo, eo) - v * v);
 			if (disc >= 0)
-				dist = v - (float)disc;
+				dist = v - disc;
 		}
 		if (dist <= 0) 
 			return null;
