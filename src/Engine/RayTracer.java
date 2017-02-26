@@ -17,7 +17,7 @@ public final class RayTracer {
 	depthmap,
 	lightmap;
 	
-	private static RenderWorker[] workers = new RenderWorker[Runtime.getRuntime().availableProcessors()]; //Runtime.getRuntime().availableProcessors()
+	private static RenderWorker[] workers = new RenderWorker[Runtime.getRuntime().availableProcessors()];
 	private static boolean rendering = false;
 	
 	public static boolean shadows = true;

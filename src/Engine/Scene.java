@@ -4,15 +4,12 @@ import java.util.ArrayList;
 
 import Objects.Light;
 import Objects.RenderObject;
-import Utils.Subdivmap;
 import Utils.Vector;
 
 public final class Scene {
 	public RenderObject[] objects;
 	public Light[] lights;
 	public Camera camera;
-	
-	private Subdivmap map;
 	
 	public Scene() {
 		this(new RenderObject[]{}, new Light[]{});
@@ -49,18 +46,4 @@ public final class Scene {
 //			System.out.println(obj.ID);
 	}
 	
-	ArrayList<RenderObject> findObjects(Ray ray) {
-		ArrayList<RenderObject> objects = new ArrayList<RenderObject>();
-		boolean[] found = new boolean[this.objects.length];
-		Vector testposition = ray.origin.Clone();
-		while(map.isInBounds(testposition.x, testposition.y, testposition.z)) {
-			testposition.add(ray.direction);
-			for (RenderObject obj : map.getObjects(testposition.x, testposition.y, testposition.z))
-				if (!found[obj.ID]) {
-					found[obj.ID] = true;
-					objects.add(obj);
-				}
-		}
-		return objects;
-	}
 }
