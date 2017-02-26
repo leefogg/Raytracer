@@ -33,14 +33,5 @@ public final class Scene {
 			newlights[i] = lights[i];
 		newlights[lights.length] = light;
 		lights = newlights;
-	}
-	
-	public void buildMap() {
-//		map = new Subdivmap(this);
-//		System.out.println(map);
-//		Ray r = new Ray(new Vector(0, 7, -10), new Vector(0,0,1));
-//		for (RenderObject obj : findObjects(r)) 
-//			System.out.println(obj.ID);
-	}
-	
+	}	
 }
