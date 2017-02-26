@@ -67,6 +67,13 @@ public final class Vector {
 		return this;
 	}
 	
+	public Vector normalize() {
+		float dist = realDistance();
+		float div = (dist == 0) ? Float.POSITIVE_INFINITY : 1f / dist;
+		multiply(div);
+		return this;
+	}
+	
 	public static Vector add(Vector v1, Vector v2) {
 		return new Vector(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
 	}
@@ -122,14 +129,6 @@ public final class Vector {
 		cosa = (float)Math.cos(rad),
 		sina = (float)Math.sin(rad);
 		return new Vector(x * cosa - y * sina, x * sina + y * cosa, z);
-	}
-	
-	public Vector normalize() {
-		float magnitude = 1f / realDistance(); // Multiplying the inverse is faster
-		x *= magnitude;
-		y *= magnitude;
-		z *= magnitude;
-		return this;
 	}
 	
 	public Vector cross(Vector other) {
