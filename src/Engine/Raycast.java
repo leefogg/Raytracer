@@ -3,20 +3,21 @@ import Utils.Color;
 import Utils.Vector;
 
 public class Raycast {
-	Vector[] hitPositions;
+	Vector[] hitPositions = new Vector[RayTracer.maxRays];
 	int hits;
 	float objdistance;
-	Color sumColor,	lightColor;
+	Color 
+	sumColor = Color.black.Clone(),
+	lightColor = Color.black.Clone();
 	
 	public Raycast() {
 		clear();
 	}
 	
 	public void clear() {
-		hitPositions = new Vector[RayTracer.maxRays];
 		hits = 0;
 		objdistance = 0;
-		sumColor = Color.black.Clone();
-		lightColor = Color.black.Clone();
+		sumColor.set(0, 0, 0);
+		lightColor.set(0, 0, 0);
 	}
 }
