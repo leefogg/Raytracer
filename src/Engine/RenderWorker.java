@@ -8,10 +8,10 @@ import Utils.Position;
 
 public class RenderWorker extends Thread {
 	private static BufferedImage
-	image,
+	diffusemap,
 	depthmap,
 	lightmap;
-	private static Scene scene;
+	private static Scene workingscene;
 	private static final ArrayList<Position> renderpositions = new ArrayList<Position>();
 	public static volatile int renderPositionIndex = 0;
 	
@@ -28,14 +28,14 @@ public class RenderWorker extends Thread {
 
 	public RenderWorker() {}
 	
-	public static void updateScene(Scene s) {
-		scene = s;
+	public static void updateScene(Scene scene) {
+		workingscene = scene;
 	}
 	
-	public static void updateImages(BufferedImage img, BufferedImage dphmp, BufferedImage lgtmp) {
-		image = img;
-		depthmap = dphmp;
-		lightmap = lgtmp;
+	public static void updateImages(BufferedImage diffuse, BufferedImage depth, BufferedImage light) {
+		diffusemap = diffuse;
+		depthmap = depth;
+		lightmap = light;
 	}
 	
 	public static void setDepthLimit(float maxdepth) {
@@ -58,11 +58,11 @@ public class RenderWorker extends Thread {
 				index++;
 			}
 			x += RenderWorker.width;
-			if (x >= image.getWidth()) {
+			if (x >= diffusemap.getWidth()) {
 				x = 0;
 				y += RenderWorker.height;
 			}
-			if (y >= image.getHeight()) break;
+			if (y >= diffusemap.getHeight()) break;
 		}
 	}
 
@@ -85,16 +85,16 @@ public class RenderWorker extends Thread {
 			int 
 			endx = startx + width,
 			endy = starty + height;
-			if (endx > image.getWidth()) 	endx = image.getWidth();
-			if (endy > image.getHeight())	endy = image.getHeight();
+			if (endx > diffusemap.getWidth()) 	endx = diffusemap.getWidth();
+			if (endy > diffusemap.getHeight())	endy = diffusemap.getHeight();
 			
 			Color color;
 			Raycast job = new Raycast();
 			int depth;
 			for (int y=starty; y<endy; y++) {
 				for (int x=startx; x<endx; x++) {
-					color = RayTracer.traceRay(job, new Ray(scene.camera.position, scene.camera.getRayDirection(x, y)), 0);
-					image.setRGB(x, y, color.getRGB());
+					color = RayTracer.traceRay(job, new Ray(workingscene.camera.position, workingscene.camera.getRayDirection(x, y)), 0);
+					diffusemap.setRGB(x, y, color.getRGB());
 
 					depth = (int)(job.objdistance*distanceMultiplier); // Depth is limited to 100 units
 					if (depth > 255) depth = 255;

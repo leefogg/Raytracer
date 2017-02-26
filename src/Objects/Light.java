@@ -9,8 +9,8 @@ public abstract class Light {
 	public Color color;
 	public float brightness = 1;
 	
-	public Light(Vector pos, Color c) {
-		this(pos, c, 1);
+	public Light(Vector pos, Color color) {
+		this(pos, color, 1);
 	}
 	public Light(Vector pos, Color c, float brightness) {
 		position = pos;

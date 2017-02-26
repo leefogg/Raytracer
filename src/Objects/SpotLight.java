@@ -8,11 +8,10 @@ public final class SpotLight extends Light {
 	private Vector normal; // not created!
 	private float angle;
 	
-	public SpotLight(Vector pos, Color c, Vector direction, float angle) {
-		super(pos, c);
+	public SpotLight(Vector pos, Color color, Vector direction, float angle) {
+		super(pos, color);
 		direction.normalize();
 		this.angle = (float)Math.cos(Math.toRadians(angle));
-		System.out.println(angle);
 	}
 
 	@Override

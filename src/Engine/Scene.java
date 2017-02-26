@@ -20,24 +20,24 @@ public final class Scene {
 	public Scene(RenderObject[] objs) {
 		this(objs, new Light[]{});
 	}
-	public Scene(RenderObject[] objs, Light[] lts) {
-		objects = objs;
-		lights = lts;
+	public Scene(RenderObject[] objects, Light[] lights) {
+		this.objects = objects;
+		this.lights = lights;
 	}
 	
-	public void add(RenderObject o) {
+	public void add(RenderObject object) {
 		RenderObject[] newobjects = new RenderObject[objects.length+1];
 		for (int i=0; i<objects.length; i++)
 			newobjects[i] = objects[i];
-		newobjects[objects.length] = o;
+		newobjects[objects.length] = object;
 		objects = newobjects;
 	}
 	
-	public void add(Light o) {
+	public void add(Light light) {
 		Light[] newlights = new Light[lights.length+1];
 		for (int i=0; i<lights.length; i++)
 			newlights[i] = lights[i];
-		newlights[lights.length] = o;
+		newlights[lights.length] = light;
 		lights = newlights;
 	}
 	
@@ -50,18 +50,17 @@ public final class Scene {
 	}
 	
 	ArrayList<RenderObject> findObjects(Ray ray) {
-		ArrayList<RenderObject> objs = new ArrayList<RenderObject>();
-		boolean[] found = new boolean[objects.length];
+		ArrayList<RenderObject> objects = new ArrayList<RenderObject>();
+		boolean[] found = new boolean[this.objects.length];
 		Vector testposition = ray.origin.Clone();
 		while(map.isInBounds(testposition.x, testposition.y, testposition.z)) {
-			System.out.println(testposition);
 			testposition.add(ray.direction);
 			for (RenderObject obj : map.getObjects(testposition.x, testposition.y, testposition.z))
 				if (!found[obj.ID]) {
 					found[obj.ID] = true;
-					objs.add(obj);
+					objects.add(obj);
 				}
 		}
-		return objs;
+		return objects;
 	}
 }

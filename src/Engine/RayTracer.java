@@ -11,49 +11,49 @@ import Utils.Position;
 import Utils.Vector;
 
 public final class RayTracer {
-	private static Scene scene;
+	private static Scene workingscene;
 	public static BufferedImage
-	image,
+	diffusemap,
 	depthmap,
 	lightmap;
 	
-	private static RenderWorker[] workers = new RenderWorker[Math.max(1, Runtime.getRuntime().availableProcessors()-1)];
+	private static RenderWorker[] workers = new RenderWorker[Runtime.getRuntime().availableProcessors()]; //Runtime.getRuntime().availableProcessors()
 	private static boolean rendering = false;
 	
 	public static boolean shadows = true;
-	public static final int maxRays = 2;
+	public static final int maxRays = 3;
 	public static int iterations, rays;
 	
-	public static void init(Scene sn, BufferedImage img) {
-		scene = sn;
-		image = img;
-		depthmap = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
-		lightmap = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+	public static void init(Scene scene, BufferedImage diffuse) {
+		workingscene = scene;
+		diffusemap = diffuse;
+		depthmap = new BufferedImage(diffusemap.getWidth(), diffusemap.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+		lightmap = new BufferedImage(diffusemap.getWidth(), diffusemap.getHeight(), BufferedImage.TYPE_INT_RGB);
 		
-		RenderWorker.updateScene(scene);
-		RenderWorker.updateImages(image, depthmap, lightmap);
+		RenderWorker.updateScene(workingscene);
+		RenderWorker.updateImages(diffusemap, depthmap, lightmap);
 		RenderWorker.generateRenderPositions();
 	}
 	
 	public void setImageSize(int width, int height) {
-		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		depthmap = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
-		lightmap = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		diffusemap = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		depthmap = new BufferedImage(diffusemap.getWidth(), diffusemap.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+		lightmap = new BufferedImage(diffusemap.getWidth(), diffusemap.getHeight(), BufferedImage.TYPE_INT_RGB);
 		
-		RenderWorker.updateImages(image, depthmap, lightmap);
+		RenderWorker.updateImages(diffusemap, depthmap, lightmap);
 		RenderWorker.generateRenderPositions();
 	}
 	
-	public static void setScene(Scene s) {
-		scene = s;
+	public static void setScene(Scene scene) {
+		workingscene = scene;
 		
-		RenderWorker.updateScene(scene);
+		RenderWorker.updateScene(workingscene);
 	}
 
 	private static RaycastReport intersectScene(Ray ray) {
 		float closest = Float.MAX_VALUE;
 		RaycastReport closestObject = null;
-		for (RenderObject object : scene.objects) {
+		for (RenderObject object : workingscene.objects) {
 			RaycastReport intersection = object.intersect(ray);
 			if (intersection == null) 
 				continue;
@@ -63,11 +63,10 @@ public final class RayTracer {
 				closest = intersection.distance;
 			}
 		}
-		
 		return closestObject;
 	}
 	
-	public static Color traceRay(Raycast job, Ray ray, int depth) {  //TODO: Copy traceRay method for use in viewport that doesn't reccur or shade
+	public static Color traceRay(Raycast job, Ray ray, int depth) {  //Copy traceRay method for use in viewport that doesn't reccur or shade
 		iterations++;
 		if (depth >= maxRays) return job.sumColor;
 		
@@ -98,13 +97,12 @@ public final class RayTracer {
 		float reflectivity = object.material.reflectivity(pos);
 		if (reflectivity == 0) return Color.black;
 		rays++;
-		
 		return Color.scale(reflectivity, traceRay(job, new Ray(pos, reflectdirection), ++depth));
 	}
 
 	private static Color light(Raycast job, RaycastReport hit, Vector hitpos, Vector normal, Vector reflectdirection, int depth) {
 		Color outputColor = hit.object.material.ambientColor();
-		for (Light light : scene.lights) {
+		for (Light light : workingscene.lights) {
 			Vector
 			lightDirection = Vector.subtract(light.position, hitpos),
 			lightDirectionNorm = Vector.normal(lightDirection);
@@ -113,13 +111,11 @@ public final class RayTracer {
 				RaycastReport toLight = intersectScene(new Ray(hitpos, lightDirectionNorm));
 				rays++;
 				boolean isinshadow = (toLight == null) ? false : (toLight.distance <= Vector.distance(lightDirection));
-				if (isinshadow) 
-					continue;
+				if (isinshadow) continue;
 			}
 			
 			float phumbrella = light.getBrightnessAtAngle(hit.ray);
-			if (phumbrella == 0) 
-				continue;
+			if (phumbrella == 0) continue;
 			
 			float illumination = Vector.dot(lightDirectionNorm, normal);
 			illumination *= phumbrella;
@@ -134,9 +130,7 @@ public final class RayTracer {
 			lightColor.scale(light.brightness);
 			outputColor = Color.add(outputColor, lightColor);
 		}
-		
-		iterations += scene.lights.length;
-		
+		iterations += workingscene.lights.length;
 		return outputColor;
 	}
 
@@ -147,26 +141,27 @@ public final class RayTracer {
 		
 		RenderWorker.reset();
 		
-		Thread th = new Thread(new Runnable() {
+		Thread thread = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				rendering = true;
-				
+				// Initialize all workers
 				for (int i=0; i<workers.length; i++)
 					workers[i] = new RenderWorker();
 				
-				for (RenderWorker w : workers)
-					w.start();
-				for (RenderWorker w : workers)
-					while(w.isAlive()){}
+				// Start them all working
+				for (RenderWorker worker : workers)
+					worker.start();
+				
+				// Wait for them all to finish so frame is completely rendered
+				for (RenderWorker worker : workers)
+					while(worker.isAlive()){}
 				
 				rendering = false;
 			}
 		});
-		
-		th.start();
-		
-		return th;
+		thread.start();
+		return thread;
 	}
 
 	// Completely impractical to render with a single thread. Only used for debugging.
@@ -177,25 +172,23 @@ public final class RayTracer {
 		int 
 		endx = startx + width,
 		endy = starty + height;
-		if (endx >= image.getWidth()) endx = image.getWidth();
-		if (endy >= image.getHeight()) endy = image.getHeight();
+		if (endx >= diffusemap.getWidth()) endx = diffusemap.getWidth();
+		if (endy >= diffusemap.getHeight()) endy = diffusemap.getHeight();
 
 		for (int y=starty; y<endy; y++)
 			for (int x=startx; x<endy; x++) {
 				Raycast job = new Raycast();
 				rays++;
-				Color color = traceRay(job, new Ray(scene.camera.position, scene.camera.getRayDirection(x, y)), 0);
-				image.setRGB(x, y, color.toDrawingColor().getRGB());
+				Color color = traceRay(job, new Ray(workingscene.camera.position, workingscene.camera.getRayDirection(x, y)), 0);
+				diffusemap.setRGB(x, y, color.toDrawingColor().getRGB());
 				
 				int depth = (int)(Math.sqrt(job.objdistance)*3.921f); // Depth is limited to 1000 units
-				if (depth > 255) 
-					depth = 255;
+				if (depth > 255) depth = 255;
 				depth = 255-depth;
-				
 				depthmap.setRGB(x, y, new java.awt.Color(depth, depth, depth).getRGB());
 				lightmap.setRGB(x, y, job.lightColor.toDrawingColor().getRGB());
 				
-				iterations += job.hits * scene.lights.length * scene.objects.length;
+				iterations += job.hits * workingscene.lights.length * workingscene.objects.length;
 			}
 	}
 	

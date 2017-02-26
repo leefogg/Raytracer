@@ -73,7 +73,7 @@ public class Main extends JPanel {
 //		if (renderer.isRendering()) return;
 		
 		update();
-		canvas.drawImage(RayTracer.image, 0, 0, 500, 500, this);
+		canvas.drawImage(RayTracer.diffusemap, 0, 0, 500, 500, this);
 		//renderer.drawRenderingThreads(canvas);
 		canvas.setColor(java.awt.Color.white);
 		canvas.drawString(String.valueOf(fc.FPS)  +" FPS", 5, 15);
