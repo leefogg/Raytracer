@@ -15,12 +15,13 @@ public class RenderWorker extends Thread {
 	private static final ArrayList<Position> renderpositions = new ArrayList<Position>();
 	public static volatile int renderPositionIndex = 0;
 	
-	public static final int 
-	sectorWidth = 25,
-	sectorHeight = 25;
+	public static int 
+	sectorWidth,
+	sectorHeight;
 	
 	private static float distanceMultiplier = 1f / (100f / 255f);
 
+	// TODO: Change to one scanline per worker
 	private int 
 	startx = 0,
 	starty = 0;
@@ -36,6 +37,9 @@ public class RenderWorker extends Thread {
 		diffusemap = diffuse;
 		depthmap = depth;
 		lightmap = light;
+		
+		sectorWidth = diffuse.getWidth() >> 4;
+		sectorHeight = diffuse.getHeight() >> 4;
 	}
 	
 	public static void setDepthLimit(float maxdepth) {
@@ -54,14 +58,15 @@ public class RenderWorker extends Thread {
 		width = diffusemap.getWidth(),
 		height = diffusemap.getHeight();
 		while (true) {
-			if (index < renderpositions.size()) {
-				Position pos = renderpositions.get(index++);
+			if (index < renderpositions.size()) { // If this position already exists, reuse it
+				Position pos = renderpositions.get(index);
 				pos.x = x;
 				pos.y = y;
-			} else {
+			} else { // Otherwise create a new one
 				renderpositions.add(new Position(x,y));
-				index++;
 			}
+			index++;
+			
 			x += RenderWorker.sectorWidth;
 			if (x >= width) {
 				x = 0;

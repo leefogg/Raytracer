@@ -24,7 +24,7 @@ public class Main extends JPanel {
 	private static final long serialVersionUID = 1435209921473617233L;
 	
 	private Scene scene;
-	private BufferedImage image = new BufferedImage(500, 500, BufferedImage.TYPE_INT_RGB);
+	private BufferedImage image = new BufferedImage(512, 512, BufferedImage.TYPE_INT_RGB);
 	private float sincos = 0;
 	private Sphere[] spheres = new Sphere[11];
 	private Mesh mesh;
@@ -73,7 +73,7 @@ public class Main extends JPanel {
 //		if (renderer.isRendering()) return;
 		
 		update();
-		canvas.drawImage(RayTracer.diffusemap, 0, 0, 500, 500, this);
+		canvas.drawImage(RayTracer.diffusemap, 0, 0, this);
 		//renderer.drawRenderingThreads(canvas);
 		canvas.setColor(java.awt.Color.white);
 		canvas.drawString(String.valueOf(fc.FPS)  +" FPS", 5, 15);

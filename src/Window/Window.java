@@ -10,7 +10,7 @@ import javax.swing.JFrame;
 public class Window {
 	
 	public static void main(String arg[]) {
-		new Window("RayTracer", 500, 500, new Main());
+		new Window("RayTracer", 512, 540, new Main());
 	}
 	
 	public Window(String Title, int Width, int Height, Component contents) {
