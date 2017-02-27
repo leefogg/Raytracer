@@ -19,10 +19,10 @@ public final class Floor extends RenderObject {
 	
 
 	@Override
-	public RaycastReport intersect(Ray ray) {
+	public void intersect(RaycastReport report, Ray ray) {
 		float denom = Vector.dot(normal, ray.direction);
-		if (denom > 0) return null;
-		return new RaycastReport(this, ray, Vector.dot(normal, ray.origin) / -denom);
+		if (denom <= 0)
+			report.check(this, ray, Vector.dot(normal, ray.origin) / -denom);
 	}
 
 }

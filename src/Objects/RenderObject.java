@@ -23,5 +23,5 @@ public abstract class RenderObject {
 	}
 	
 	public abstract Vector getNormal(Vector pos);
-	public abstract RaycastReport intersect(Ray ray);
+	public abstract void intersect(RaycastReport report, Ray ray);
 }

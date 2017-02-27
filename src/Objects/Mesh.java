@@ -50,7 +50,7 @@ public final class Mesh extends RenderObject {
 		}
 		
 		@Override
-		public RaycastReport intersect(Ray ray) {
+		public void intersect(RaycastReport report, Ray ray) {
 			//if (Vector.dot(ray.direction, normal) < 0) return null;
 			/*
 			float trisize = normal.dot(A());
@@ -73,24 +73,24 @@ public final class Mesh extends RenderObject {
 			Vector P = Vector.cross(ray.direction, edge2);
 			d = edge1.dot(P);
 			if (d < 1e-3)
-				return null;
+				return;
 			inv_d = 1f / d;
 			
 			Vector T = Vector.subtract(ray.origin, A());
 			u = T.dot(P) * inv_d;
 			if (u < 0f || u > 1f)
-				return null;
+				return;
 			
 			Vector Q = Vector.cross(T, edge1);
 			v = ray.direction.dot(Q) * inv_d;
 			if (v < 0f || u + v > 1f)
-				return null;
+				return;
 			
 			t = edge2.dot(Q) * inv_d;
 			if (t <= 1e-3)
-				return null;
+				return;
 			
-			return new RaycastReport(this, ray, t);
+			report.check(this, ray, t);
 		}
 		
 		public Triangle Clone() {
@@ -199,18 +199,9 @@ public final class Mesh extends RenderObject {
 	}
 
 	@Override
-	public RaycastReport intersect(Ray ray) {
-		float closest = Float.MAX_VALUE;
-		RaycastReport closesthit = null;
-		for (Triangle tri : faces) {
-			RaycastReport hit = tri.intersect(ray);
-			if (hit == null) continue;
-			if (hit.distance < closest) {
-				closesthit = hit;
-				closest = hit.distance;
-			}
-		}
-		return closesthit;
+	public void intersect(RaycastReport report, Ray ray) {
+		for (Triangle tri : faces)
+			tri.intersect(report, ray);
 	}
 	
 	public static Mesh createQuad(Material mat) {

@@ -51,19 +51,11 @@ public final class RayTracer {
 	}
 
 	private static RaycastReport intersectScene(Ray ray) {
-		float closest = Float.MAX_VALUE;
-		RaycastReport closestObject = null;
-		for (RenderObject object : workingscene.objects) {
-			RaycastReport intersection = object.intersect(ray);
-			if (intersection == null) 
-				continue;
-			
-			if (intersection.distance < closest) {
-				closestObject = intersection;
-				closest = intersection.distance;
-			}
-		}
-		return closestObject;
+		RaycastReport report = new RaycastReport();
+		for (RenderObject object : workingscene.objects)
+			object.intersect(report, ray);
+		
+		return report;
 	}
 	
 	public static Color traceRay(Raycast job, Ray ray, int depth) {  //Copy traceRay method for use in viewport that doesn't reccur or shade
@@ -71,14 +63,14 @@ public final class RayTracer {
 		if (depth >= maxRays) 
 			return job.sumColor;
 		
-		RaycastReport intersections = intersectScene(ray);
-		if (intersections == null) // Stop tracing if no hit
+		RaycastReport report = intersectScene(ray);
+		if (!report.hitAny) // Stop tracing if no hit
 			return Color.voidColor;
 		
 		if (depth == 0) 
-			job.objdistance = intersections.distance;
+			job.objdistance = report.distance;
 		job.hits = depth;
-		Color hitcolor = shade(job, intersections, depth);
+		Color hitcolor = shade(job, report, depth);
 		job.sumColor.add(hitcolor);
 		
 		return hitcolor;
@@ -89,9 +81,9 @@ public final class RayTracer {
 		Vector hitposition = Vector.scale(report.distance, direction).add(report.ray.origin);
 		job.hitPositions[depth] = hitposition;
 		
-		Vector normal = report.object.getNormal(hitposition);
+		Vector normal = report.closestObject.getNormal(hitposition);
 		direction.subtract(Vector.scale(Vector.dot(normal, direction) * 2, normal));
-		Color reflectedcolor = getReflectionColor(job, report.object, hitposition, direction, depth);
+		Color reflectedcolor = getReflectionColor(job, report.closestObject, hitposition, direction, depth);
 		Color naturalcolor = light(job, report, hitposition, normal, direction, depth);
 		
 		return naturalcolor.add(reflectedcolor);
@@ -108,7 +100,7 @@ public final class RayTracer {
 	}
 
 	private static Color light(Raycast job, RaycastReport hit, Vector hitpos, Vector normal, Vector reflectdirection, int depth) {
-		Color outputColor = hit.object.material.ambientColor();
+		Color outputColor = hit.closestObject.material.ambientColor();
 		
 		for (Light light : workingscene.lights) {
 			Vector
@@ -117,9 +109,9 @@ public final class RayTracer {
 			lightdirection = lightdirection.multiply(1f / distance);
 			
 			if (shadows) {
-				RaycastReport toLight = intersectScene(new Ray(hitpos, lightdirection));
+				RaycastReport tolight = intersectScene(new Ray(hitpos, lightdirection));
 				++rays;
-				boolean isinshadow = (toLight == null) ? false : (toLight.distance <= distance);
+				boolean isinshadow = (tolight == null) ? false : (tolight.distance <= distance);
 				if (isinshadow) 
 					continue;
 			}
@@ -132,11 +124,11 @@ public final class RayTracer {
 			float specular = Vector.dot(lightdirection, reflectdirection);
 			Color 
 			lightcolor = (illumination > 0) ? Color.scale(illumination, light.color) : Color.defaultcolor,
-			specularcolor = (specular > 0) ? Color.scale((float)Math.pow(specular, hit.object.material.roughness), light.color) : Color.defaultcolor; // Pow? Not scale?
+			specularcolor = (specular > 0) ? Color.scale((float)Math.pow(specular, hit.closestObject.material.roughness), light.color) : Color.defaultcolor; // Pow? Not scale?
 			if (depth == 0) 
 				job.lightColor.add(lightcolor);
-			lightcolor.multiply(hit.object.material.diffuseColor(hitpos));
-			specularcolor.multiply(hit.object.material.specularColor(hitpos));
+			lightcolor.multiply(hit.closestObject.material.diffuseColor(hitpos));
+			specularcolor.multiply(hit.closestObject.material.specularColor(hitpos));
 			lightcolor.add(specularcolor);
 			lightcolor.scale(light.brightness);
 			
@@ -166,6 +158,7 @@ public final class RayTracer {
 						worker.interrupt();
 					else
 						worker.start();
+				
 				
 				// Wait for them all to finish so frame is completely rendered
 				for (RenderWorker worker : workers)

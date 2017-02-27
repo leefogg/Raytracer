@@ -21,7 +21,7 @@ public final class Sphere extends RenderObject {
 	}
 
 	@Override
-	public RaycastReport intersect(Ray ray) {
+	public void intersect(RaycastReport report, Ray ray) {
 		Vector eo = Vector.subtract(position, ray.origin);
 		float v = Vector.dot(eo, ray.direction);
 		float dist = 0;
@@ -30,9 +30,9 @@ public final class Sphere extends RenderObject {
 			if (disc >= 0)
 				dist = v - disc;
 		}
-		if (dist <= 0) 
-			return null;
-		return new RaycastReport(this, ray, dist);
+		
+		if (dist > 0) 
+			report.check(this, ray, dist);
 	}
 
 }
