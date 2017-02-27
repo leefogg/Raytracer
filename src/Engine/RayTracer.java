@@ -63,7 +63,7 @@ public final class RayTracer {
 	}
 	
 	public static Color traceRay(Raycast job, Ray ray, int depth) {  //Copy traceRay method for use in viewport that doesn't reccur or shade
-		iterations++;
+		++iterations;
 		if (depth >= maxRays) 
 			return job.sumColor;
 		
@@ -84,10 +84,12 @@ public final class RayTracer {
 		Vector direction = report.ray.direction.Clone();
 		Vector hitposition = Vector.scale(report.distance, direction).add(report.ray.origin);
 		job.hitPositions[depth] = hitposition;
+		
 		Vector normal = report.object.getNormal(hitposition);
 		direction.subtract(Vector.scale(Vector.dot(normal, direction) * 2, normal));
 		Color reflectedcolor = getReflectionColor(job, report.object, hitposition, direction, depth);
 		Color naturalcolor = light(job, report, hitposition, normal, direction, depth);
+		
 		return naturalcolor.add(reflectedcolor);
 	}
 
@@ -96,7 +98,7 @@ public final class RayTracer {
 		if (reflectivity == 0) 
 			return Color.black;
 		
-		rays++;
+		++rays;
 		
 		return traceRay(job, new Ray(pos, reflectdirection), ++depth).scale(reflectivity);
 	}
@@ -106,13 +108,14 @@ public final class RayTracer {
 		
 		for (Light light : workingscene.lights) {
 			Vector
-			lightDirection = Vector.subtract(light.position, hitpos),
-			lightDirectionNorm = Vector.normal(lightDirection);
+			lightdirection = Vector.subtract(light.position, hitpos);
+			float distance = lightdirection.realDistance();
+			lightdirection = lightdirection.multiply(1f / distance);
 			
 			if (shadows) {
-				RaycastReport toLight = intersectScene(new Ray(hitpos, lightDirectionNorm));
-				rays++;
-				boolean isinshadow = (toLight == null) ? false : (toLight.distance <= Vector.distance(lightDirection));
+				RaycastReport toLight = intersectScene(new Ray(hitpos, lightdirection));
+				++rays;
+				boolean isinshadow = (toLight == null) ? false : (toLight.distance <= distance);
 				if (isinshadow) 
 					continue;
 			}
@@ -121,9 +124,8 @@ public final class RayTracer {
 			if (phumbrella == 0) 
 				continue;
 			
-			float illumination = Vector.dot(lightDirectionNorm, normal);
-			illumination *= phumbrella;
-			float specular = Vector.dot(lightDirectionNorm, reflectdirection.normalize());
+			float illumination = Vector.dot(lightdirection, normal) * phumbrella;
+			float specular = Vector.dot(lightdirection, reflectdirection);
 			Color 
 			lightcolor = (illumination > 0) ? Color.scale(illumination, light.color) : Color.defaultcolor,
 			specularcolor = (specular > 0) ? Color.scale((float)Math.pow(specular, hit.object.material.roughness), light.color) : Color.defaultcolor; // Pow? Not scale?
@@ -134,7 +136,7 @@ public final class RayTracer {
 			lightcolor.add(specularcolor);
 			lightcolor.scale(light.brightness);
 			
-			outputColor = outputColor.add(lightcolor);
+			outputColor.add(lightcolor);
 		}
 		
 		iterations += workingscene.lights.length;
@@ -154,7 +156,7 @@ public final class RayTracer {
 			public void run() {
 				rendering = true;
 				// Initialize all workers
-				for (int i=0; i<workers.length; i++)
+				for (int i=0; i<workers.length; ++i)
 					workers[i] = new RenderWorker();
 				
 				// Start them all working
