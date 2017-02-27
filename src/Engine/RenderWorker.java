@@ -2,6 +2,7 @@ package Engine;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import Utils.Color;
 import Utils.Position;
@@ -12,10 +13,10 @@ public class RenderWorker extends Thread {
 	depthmap,
 	lightmap;
 	private static Scene workingscene;
-	public static volatile int currentScanLine = 0;
-	
 	private static float distanceMultiplier = 1f / (100f / 255f);
-
+	public static AtomicInteger currentScanLine = new AtomicInteger(0);
+	
+	int scanline;
 
 	public RenderWorker() {}
 	
@@ -34,7 +35,7 @@ public class RenderWorker extends Thread {
 	}
 	
 	public static void reset() {
-		currentScanLine = 0;
+		currentScanLine.set(0);;
 	}
 	
 	public int getX() {
@@ -45,7 +46,6 @@ public class RenderWorker extends Thread {
 		return scanline;
 	}
 
-	int scanline;
 	@Override
 	public void run() {
 		int 
@@ -53,8 +53,8 @@ public class RenderWorker extends Thread {
 		height = diffusemap.getHeight();
 		Raycast job = new Raycast();
 		while (true) {
-			++currentScanLine;
-			scanline = currentScanLine;
+			currentScanLine.incrementAndGet();
+			scanline = currentScanLine.get();
 			if (scanline >= height)
 				break;
 			
