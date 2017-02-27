@@ -30,6 +30,10 @@ public final class RayTracer {
 		
 		RenderWorker.updateScene(workingscene);
 		RenderWorker.updateImages(diffusemap, depthmap, lightmap);
+		
+		// Initialize all workers
+		for (int i=0; i<workers.length; ++i)
+			workers[i] = new RenderWorker();
 	}
 	
 	public void setImageSize(int width, int height) {
@@ -155,17 +159,17 @@ public final class RayTracer {
 			@Override
 			public void run() {
 				rendering = true;
-				// Initialize all workers
-				for (int i=0; i<workers.length; ++i)
-					workers[i] = new RenderWorker();
-				
-				// Start them all working
+
+				// (re-)start them all working
 				for (RenderWorker worker : workers)
-					worker.start();
+					if (worker.running) 
+						worker.interrupt();
+					else
+						worker.start();
 				
 				// Wait for them all to finish so frame is completely rendered
 				for (RenderWorker worker : workers)
-					while(worker.isAlive()){}
+					while(!worker.done){}
 				
 				rendering = false;
 			}
