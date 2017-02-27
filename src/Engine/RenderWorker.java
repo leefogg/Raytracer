@@ -42,9 +42,10 @@ public class RenderWorker extends Thread {
 	}
 	
 	public int getY() {
-		return currentScanLine;
+		return scanline;
 	}
 
+	int scanline;
 	@Override
 	public void run() {
 		int 
@@ -53,7 +54,7 @@ public class RenderWorker extends Thread {
 		Raycast job = new Raycast();
 		while (true) {
 			++currentScanLine;
-			int scanline = currentScanLine;
+			scanline = currentScanLine;
 			if (scanline >= height)
 				break;
 			

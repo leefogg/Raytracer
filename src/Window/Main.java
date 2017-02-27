@@ -70,11 +70,11 @@ public class Main extends JPanel {
 	}
 
 	public void paintComponent(Graphics canvas) {
-//		if (renderer.isRendering()) return;
+//		if (RayTracer.isRendering()) return;
 		
 		update();
 		canvas.drawImage(RayTracer.diffusemap, 0, 0, this);
-		//renderer.drawRenderingThreads(canvas);
+		//RayTracer.drawRenderingThreads(canvas);
 		canvas.setColor(java.awt.Color.white);
 		canvas.drawString(String.valueOf(fc.FPS)  +" FPS", 5, 15);
 		canvas.drawString("Frame: " + String.valueOf(frame++), 5, 25);
@@ -86,7 +86,7 @@ public class Main extends JPanel {
 	}
 
 	private void update() {
-		if (RayTracer.isRendering()) return;
+		//if (RayTracer.isRendering()) return;
 		
 		sincos += (float)(Math.PI*2/720);
 		
