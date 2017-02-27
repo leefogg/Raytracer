@@ -48,20 +48,18 @@ public class Main extends JPanel {
 //			e1.printStackTrace();
 //		}
 		
-		try {
-			scene = new Scene(
-						objects,
-						new Light[] {
-								new AmbientLight(new Vector(-2f, 2.5f, 0f), 	 new Color(0.25f, 0.05f, 0.05f)),
-								new AmbientLight(new Vector(1.5f, 2.5f, 1.5f),	 new Color(0.05f, 0.05f, 0.25f)),
-								new AmbientLight(new Vector(1.5f, 2.5f, -1.5f),  new Color(0.05f, 0.25f, 0.05f)),
-								new AmbientLight(new Vector(0f, 3.5f, 0f), 	 	 new Color(0.20f, 0.20f, 0.20f)),
-								//new SpotLight(new Vector(0,10,0), Color.white, new Vector(0,-1,0), 70)
-						}
-					);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		
+		scene = new Scene(
+					objects,
+					new Light[] {
+							new AmbientLight(new Vector(-2f, 2.5f, 0f), 	 new Color(0.25f, 0.05f, 0.05f)),
+							new AmbientLight(new Vector(1.5f, 2.5f, 1.5f),	 new Color(0.05f, 0.05f, 0.25f)),
+							new AmbientLight(new Vector(1.5f, 2.5f, -1.5f),  new Color(0.05f, 0.25f, 0.05f)),
+							new AmbientLight(new Vector(0f, 3.5f, 0f), 	 	 new Color(0.20f, 0.20f, 0.20f)),
+							//new SpotLight(new Vector(0,10,0), Color.white, new Vector(0,-1,0), 70)
+					}
+				);
+		
 		
 		RayTracer.init(scene, image);
 		scene.camera = new Camera(new Vector(0, 7, -10), new Vector(0,2,0));
